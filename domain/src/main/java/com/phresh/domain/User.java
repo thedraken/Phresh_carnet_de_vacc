@@ -1,22 +1,30 @@
 package com.phresh.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.Set;
 
 @Entity
-public class User {
+public class User implements UserDetails, Authentication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String firstName;
+    @Column(nullable = false)
     private String surname;
+    @Column(nullable = false, unique = true)
     private String email;
-
+    @Column(nullable = false)
     private String password;
+    @OneToMany
+    private Set<Role> roles;
 
     public Long getId() {
         return id;
@@ -42,6 +50,10 @@ public class User {
         this.surname = surname;
     }
 
+    public String getFullName() {
+        return getFirstName() + " " + getSurname();
+    }
+
     public String getEmail() {
         return email;
     }
@@ -56,5 +68,45 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
+
+    @Override
+    public Object getCredentials() {
+        return null;
+    }
+
+    @Override
+    public Object getDetails() {
+        return null;
+    }
+
+    @Override
+    public Object getPrincipal() {
+        return null;
+    }
+
+    @Override
+    public boolean isAuthenticated() {
+        return false;
+    }
+
+    @Override
+    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+
+    }
+
+    @Override
+    public String getName() {
+        return getFullName();
     }
 }

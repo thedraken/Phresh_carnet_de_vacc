@@ -7,6 +7,8 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
@@ -71,7 +73,15 @@ public class CreateUserView extends Main implements IPhreshView<CreateUserPresen
     private void validateForm() {
         User user = new User();
         if (binder.writeBeanIfValid(user)) {
-            presenter.createUser(user);
+            try {
+                presenter.createUser(user);
+                this.getUI().ifPresent(ui -> ui.navigate("login"));
+                Notification.show("User created successfully");
+            } catch (Exception e) {
+                Notification notification = new Notification(e.getMessage());
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.open();
+            }
         }
     }
 }
