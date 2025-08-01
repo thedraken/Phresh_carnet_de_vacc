@@ -25,6 +25,8 @@ public class User implements UserDetails, Authentication {
     private String password;
     @OneToMany
     private Set<Role> roles;
+    @Column(nullable = false)
+    private boolean enabled = true;
 
     public Long getId() {
         return id;
@@ -68,6 +70,23 @@ public class User implements UserDetails, Authentication {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
