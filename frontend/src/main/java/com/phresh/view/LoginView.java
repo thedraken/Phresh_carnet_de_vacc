@@ -12,16 +12,15 @@ import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.security.auth.login.LoginException;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +30,7 @@ import java.util.logging.Logger;
 public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<LoginPresenter> {
 
     public static final String LOGIN_PATH = "login-action";
+    public static final String LOGGED_IN_MESSAGE = "loggedIn";
     private static final Logger logger = Logger.getLogger(LoginView.class.getSimpleName());
     private final LoginForm loginForm;
     private final AuthenticationContext authenticationContext;
@@ -53,7 +53,8 @@ public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<
             loginForm.setError(false);
             try {
                 loginPresenter.login(loginEvent.getUsername(), loginEvent.getPassword());
-                UI.getCurrent().navigate("");
+                QueryParameters loggedInQueryParameter = new QueryParameters(Map.of(LOGGED_IN_MESSAGE, new ArrayList<>()));
+                UI.getCurrent().navigate(VaccinationCardView.class, loggedInQueryParameter);
                 loginForm.setError(false);
             } catch (RuleException | LoginException e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);

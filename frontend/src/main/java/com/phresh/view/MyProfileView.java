@@ -1,26 +1,24 @@
 package com.phresh.view;
 
-import com.phresh.presenter.HomePresenter;
-import com.vaadin.flow.component.notification.Notification;
+import com.phresh.presenter.MyProfilePresenter;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route("")
-@PageTitle("Phresh Vaccination")
+@Route("my_profile")
 @PermitAll
-public class HomeView extends AbstractLoggedInView<HomePresenter> {
+@PageTitle("My Profile")
+public class MyProfileView extends AbstractLoggedInView<MyProfilePresenter> {
 
     @Autowired
-    public HomeView(HomePresenter presenter) {
+    public MyProfileView(MyProfilePresenter presenter) {
         super(presenter);
     }
 
     @Override
     public VerticalLayout buildLayout() {
-        Notification.show("Login successful");
         return new VerticalLayout();
     }
 }

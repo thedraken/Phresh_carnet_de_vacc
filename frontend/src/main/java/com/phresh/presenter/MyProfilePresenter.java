@@ -1,15 +1,15 @@
 package com.phresh.presenter;
 
-import com.phresh.view.HomeView;
+import com.phresh.view.MyProfileView;
 import com.vaadin.flow.spring.security.AuthenticationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class HomePresenter extends AbstractLoggedinPresenter<HomeView> {
+public class MyProfilePresenter extends AbstractLoggedinPresenter<MyProfileView> {
 
     @Autowired
-    public HomePresenter(AuthenticationContext authenticationContext) {
+    public MyProfilePresenter(AuthenticationContext authenticationContext) {
         super(authenticationContext);
     }
 }
