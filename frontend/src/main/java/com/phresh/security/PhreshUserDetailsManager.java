@@ -4,6 +4,7 @@ import com.phresh.UserService;
 import com.phresh.domain.User;
 import com.phresh.exceptions.RuleException;
 import com.phresh.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,7 +39,16 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
     public void updateUser(UserDetails userDetails) {
         Authentication currentUser = this.securityContextHolderStrategy.getContext().getAuthentication();
         User user = userRepository.findUserByEmail(currentUser.getPrincipal().toString());
-        //TODO
+        if (currentUser instanceof User updatedUser) {
+            BeanUtils.copyProperties(user, updatedUser);
+            try {
+                userService.saveUser(user);
+            } catch (RuleException e) {
+                //TODO
+            }
+        } else {
+            //TODO Does this happen?
+        }
     }
 
     @Override

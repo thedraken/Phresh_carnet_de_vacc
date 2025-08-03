@@ -16,10 +16,16 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Route(value = "createUser", autoLayout = false)
 @PageTitle("Create User")
@@ -75,8 +81,9 @@ public class CreateUserView extends Main implements IPhreshView<CreateUserPresen
         if (binder.writeBeanIfValid(user)) {
             try {
                 presenter.createUser(user);
-                this.getUI().ifPresent(ui -> ui.navigate("login"));
-                Notification.show("User created successfully");
+                Map<String, List<String>> mapOfParameters = new HashMap<>();
+                mapOfParameters.put("createUser", new ArrayList<>());
+                this.getUI().ifPresent(ui -> ui.navigate("login", new QueryParameters(mapOfParameters)));
             } catch (Exception e) {
                 Notification notification = new Notification(e.getMessage());
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);

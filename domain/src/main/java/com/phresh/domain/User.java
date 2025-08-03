@@ -28,6 +28,17 @@ public class User implements UserDetails, Authentication {
     @Column(nullable = false)
     private boolean enabled = true;
 
+    public User() {
+    }
+
+    public User(String firstName, String surname, String email, String password, Set<Role> roles) {
+        this.firstName = firstName;
+        this.surname = surname;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
+
     public Long getId() {
         return id;
     }
@@ -101,17 +112,17 @@ public class User implements UserDetails, Authentication {
 
     @Override
     public Object getCredentials() {
-        return null;
+        return getPassword();
     }
 
     @Override
     public Object getDetails() {
-        return null;
+        return getFullName();
     }
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return getEmail();
     }
 
     @Override

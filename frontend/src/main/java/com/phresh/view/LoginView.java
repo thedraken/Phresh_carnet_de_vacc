@@ -23,11 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<LoginPresenter> {
 
     private final LoginForm loginForm;
-    private final LoginPresenter loginPresenter;
+    //private final LoginPresenter loginPresenter;
 
     @Autowired
     public LoginView(LoginPresenter loginPresenter) {
-        this.loginPresenter = loginPresenter;
+        //this.loginPresenter = loginPresenter;
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER,
                 LumoUtility.AlignItems.CENTER);
@@ -36,11 +36,12 @@ public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<
         LoginI18n.Form loginI18nForm = loginI18n.getForm();
         loginI18nForm.setUsername("Email");
         loginForm = new LoginForm(loginI18n);
-        loginForm.setAction("login");
+        //loginForm.setAction("login");
         loginForm.addLoginListener(event -> {
             try {
-                loginPresenter.login(event.getUsername(), event.getPassword());
-                this.getUI().ifPresent(ui -> ui.navigate(""));
+                if (loginPresenter.login(event.getUsername(), event.getPassword())) {
+                    this.getUI().ifPresent(ui -> ui.navigate("home"));
+                }
             } catch (Exception e) {
                 Notification notification = new Notification(e.getMessage());
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -62,6 +63,9 @@ public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<
                 .getParameters()
                 .containsKey("error")) {
             loginForm.setError(true);
+        }
+        if (beforeEnterEvent.getLocation().getQueryParameters().getParameters().containsKey("createUser")) {
+            Notification.show("User created successfully");
         }
     }
 }

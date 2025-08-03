@@ -3,6 +3,9 @@ package com.phresh.domain;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Entity
 public class Role implements GrantedAuthority {
 
@@ -11,6 +14,16 @@ public class Role implements GrantedAuthority {
     private Long id;
     @Column(unique = true)
     private String name;
+    @OneToMany()
+    private Set<RoleAccess> roleAccess;
+
+    public Role() {
+    }
+
+    public Role(String name, Set<RoleAccess> roleAccess) {
+        this.name = name;
+        this.roleAccess = roleAccess;
+    }
 
     public Long getId() {
         return id;
@@ -28,8 +41,16 @@ public class Role implements GrantedAuthority {
         this.name = name;
     }
 
+    public Set<RoleAccess> getRoleAccess() {
+        return roleAccess;
+    }
+
+    public void setRoleAccess(Set<RoleAccess> roleAccess) {
+        this.roleAccess = roleAccess;
+    }
+
     @Override
     public String getAuthority() {
-        return "";
+        return roleAccess.stream().map(RoleAccess::getAccessName).collect(Collectors.joining(";"));
     }
 }
