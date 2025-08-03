@@ -3,11 +3,12 @@ package com.phresh.security;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 
 @Configuration
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class PasswordEncryptor {
+public class PasswordEncryptor implements PasswordEncoder {
 
     private final Pbkdf2PasswordEncoder passwordEncoder;
 
@@ -16,11 +17,13 @@ public class PasswordEncryptor {
                 32, 2048, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
     }
 
-    public String encryptPassword(String password) {
-        return passwordEncoder.encode(password);
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return passwordEncoder.encode(rawPassword);
     }
 
-    public boolean passwordMatches(String expectedPassword, String encryptedPassword) {
-        return passwordEncoder.matches(expectedPassword, encryptedPassword);
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

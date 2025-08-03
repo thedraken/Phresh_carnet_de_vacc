@@ -1,10 +1,16 @@
 package com.phresh.security;
 
 import com.phresh.view.LoginView;
+import com.vaadin.flow.router.RouteConfiguration;
+import com.vaadin.flow.server.VaadinServiceInitListener;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -31,6 +37,31 @@ public class SecurityConfig extends VaadinWebSecurity {
         return userDetailsManager;
     }
 
+    @Bean
+    public VaadinServiceInitListener loginConfigurer() {
+        return (serviceInitEvent) -> {
+            var routeConfiguration = RouteConfiguration.forApplicationScope();
+            routeConfiguration.setRoute(LoginView.LOGIN_PATH, LoginView.class);
+        };
+    }
 
+    @Bean
+    protected DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider(userDetailsManager());
+        daoAuthenticationProvider.setPasswordEncoder(userDetailsManager.getPasswordEncryptor());
+        return daoAuthenticationProvider;
+    }
 
+    @Bean
+    public ProviderManager providerManager() {
+        return new ProviderManager(daoAuthenticationProvider());
+    }
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(daoAuthenticationProvider());
+        return authenticationManagerBuilder.build();
+    }
 }

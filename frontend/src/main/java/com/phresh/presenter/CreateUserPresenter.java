@@ -27,7 +27,7 @@ public class CreateUserPresenter implements IPhreshPresenter<CreateUserView> {
         if (!pattern.matcher(user.getPassword()).find()) {
             throw new RuleException("Passwords must contain at least one digit, one lower case letter, one upper case letter, and one special character");
         }
-        user.setPassword(passwordEncryptor.encryptPassword(user.getPassword()));
+        user.setPassword(passwordEncryptor.encode(user.getPassword()));
         userService.saveUser(user);
     }
     

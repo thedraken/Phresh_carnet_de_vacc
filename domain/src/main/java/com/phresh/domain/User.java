@@ -23,7 +23,7 @@ public class User implements UserDetails, Authentication {
     private String email;
     @Column(nullable = false)
     private String password;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
     @Column(nullable = false)
     private boolean enabled = true;

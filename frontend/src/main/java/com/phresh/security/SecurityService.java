@@ -1,8 +1,8 @@
 package com.phresh.security;
 
-import com.phresh.domain.User;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
+import jakarta.servlet.ServletException;
 import org.springframework.security.authentication.jaas.SecurityContextLoginModule;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +14,9 @@ import javax.security.auth.login.LoginException;
 
 @Component
 public class SecurityService {
+
     private static final String LOGOUT_SUCCESS_URL = "/";
+
     //private static final Logger log = LoggerFactory.getLogger(SecurityService.class);
 
     public UserDetails getAuthenticatedUser() {
@@ -35,10 +37,14 @@ public class SecurityService {
                 null);
     }
 
-    public boolean login(User user) throws LoginException {
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(user);
+    public void login(String username, String password) throws LoginException {
         SecurityContextLoginModule loginModule = new SecurityContextLoginModule();
-        return loginModule.login();
+        VaadinServletRequest request = VaadinServletRequest.getCurrent();
+        try {
+            request.login(username, password);
+            loginModule.login();
+        } catch (ServletException e) {
+            throw new LoginException(e.getMessage());
+        }
     }
 }

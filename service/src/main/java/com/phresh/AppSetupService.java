@@ -42,7 +42,7 @@ public class AppSetupService {
         roleRepository.save(adminRole);
 
         //TODO Not for production!
-        User user = new User("Admin", "Admin", "phresh@admin.lu", passwordEncryptor.encryptPassword("Admin1-TestSystem"), Set.of(adminRole));
+        User user = new User("Admin", "Admin", "phresh@admin.lu", passwordEncryptor.encode("Admin1-TestSystem"), Set.of(adminRole));
         userRepository.save(user);
     }
 }

@@ -66,8 +66,8 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
     public void changePassword(String oldPassword, String newPassword) {
         Authentication currentUser = this.securityContextHolderStrategy.getContext().getAuthentication();
         User user = userRepository.findUserByEmail(currentUser.getPrincipal().toString());
-        if (user != null && user.getPassword().equals(passwordEncryptor.encryptPassword(oldPassword))) {
-            user.setPassword(passwordEncryptor.encryptPassword(newPassword));
+        if (user != null && user.getPassword().equals(passwordEncryptor.encode(oldPassword))) {
+            user.setPassword(passwordEncryptor.encode(newPassword));
             try {
                 userService.saveUser(user);
             } catch (RuleException e) {
@@ -84,5 +84,9 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findUserByEmail(username);
+    }
+
+    public PasswordEncryptor getPasswordEncryptor() {
+        return passwordEncryptor;
     }
 }
