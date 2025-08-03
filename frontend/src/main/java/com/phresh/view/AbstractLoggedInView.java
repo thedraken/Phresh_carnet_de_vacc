@@ -20,7 +20,7 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
         User user = presenter.getUserFromAuthenticationContext();
 
         HorizontalLayout header;
-        H1 logo = new H1("Vaadin CRM");
+        H1 logo = new H1("Phresh Vaccination schedule");
         logo.addClassName("logo");
         try {
             if (user != null) {
@@ -28,6 +28,8 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
                         this.presenter.doLogout());
                 Span loggedUser = new Span("Welcome " + user.getFullName());
                 header = new HorizontalLayout(logo, loggedUser, logout);
+                header.setSizeFull();
+                header.setFlexGrow(1, logo);
             } else {
                 header = new HorizontalLayout(logo);
             }
