@@ -14,7 +14,6 @@ public class User implements UserDetails, Authentication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String firstName;
     @Column(nullable = false)
@@ -27,6 +26,8 @@ public class User implements UserDetails, Authentication {
     private Set<Role> roles;
     @Column(nullable = false)
     private boolean enabled = true;
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Vaccination> vaccinations;
 
     public User() {
     }
@@ -89,6 +90,14 @@ public class User implements UserDetails, Authentication {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public Set<Vaccination> getVaccinations() {
+        return vaccinations;
+    }
+
+    public void setVaccinations(Set<Vaccination> vaccinations) {
+        this.vaccinations = vaccinations;
     }
 
     @Override
