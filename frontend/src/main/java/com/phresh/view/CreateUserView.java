@@ -5,6 +5,7 @@ import com.phresh.presenter.CreateUserPresenter;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Main;
 import com.vaadin.flow.component.notification.Notification;
@@ -22,6 +23,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +48,10 @@ public class CreateUserView extends Main implements IPhreshView<CreateUserPresen
         TextField firstName = new TextField("First Name");
         TextField surname = new TextField("Surname");
         TextField email = new TextField("Email");
+        DatePicker dateOfBirth = new DatePicker("Date of birth");
+        //Would anyone ever be older than 200 years who needs to create a user?
+        dateOfBirth.setMin(LocalDate.now().minusYears(200));
+        dateOfBirth.setMax(LocalDate.now());
         PasswordField password = new PasswordField("Password");
         password.setMinLength(15);
         //https://stackoverflow.com/questions/1559751/regex-to-make-sure-that-the-string-contains-at-least-one-lower-case-char-upper
@@ -61,6 +67,7 @@ public class CreateUserView extends Main implements IPhreshView<CreateUserPresen
         binder.forField(email).asRequired().bind(User::getEmail, User::setEmail);
         binder.forField(password).asRequired().bind(User::getPassword, User::setPassword);
         binder.forField(confirmPassword).asRequired().withValidator((Validator<String>) (s, valueContext) -> s.equals(password.getValue()) ? ValidationResult.ok() : ValidationResult.error("Passwords do not match"));
+        binder.forField(dateOfBirth).asRequired().bind(User::getDateOfBirth, User::setDateOfBirth);
 
         createUserForm.addFormRow(firstName, surname);
         createUserForm.addFormRow(email);

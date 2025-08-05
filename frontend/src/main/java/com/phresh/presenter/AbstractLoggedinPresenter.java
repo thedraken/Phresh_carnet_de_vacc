@@ -33,5 +33,4 @@ public abstract class AbstractLoggedinPresenter<V extends IPhreshView<?>> implem
                 null);
         authenticationContext.logout();
     }
-
 }

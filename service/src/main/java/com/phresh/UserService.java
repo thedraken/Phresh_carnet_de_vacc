@@ -24,6 +24,21 @@ public class UserService {
 
     @Transactional(rollbackFor = RuleException.class)
     public void saveUser(User user) throws RuleException {
+        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
+            throw new RuleException("Please enter full name");
+        }
+        if (user.getSurname() == null || user.getSurname().trim().isEmpty()) {
+            throw new RuleException("Please enter surname");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new RuleException("Please enter email");
+        }
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
+            throw new RuleException("Please enter password");
+        }
+        if (user.getRoles().isEmpty()) {
+            throw new RuleException("Missing role, please contact support");
+        }
         User userCheck = userRepository.findUserByEmail(user.getEmail());
         if (userCheck != null && !Objects.equals(user.getId(), userCheck.getId())) {
             throw new RuleException("User with same email already exists");

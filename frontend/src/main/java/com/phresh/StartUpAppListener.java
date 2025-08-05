@@ -10,6 +10,9 @@ public class StartUpAppListener implements ApplicationListener<ApplicationReadyE
 
     private final AppSetupService appSetupService;
 
+    //TODO Use this to create the test users or not
+    private final boolean createTestUsers = true;
+
     @Autowired
     public StartUpAppListener(AppSetupService appSetupService) {
         this.appSetupService = appSetupService;
@@ -17,6 +20,6 @@ public class StartUpAppListener implements ApplicationListener<ApplicationReadyE
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        appSetupService.startApp();
+        appSetupService.startApp(createTestUsers);
     }
 }

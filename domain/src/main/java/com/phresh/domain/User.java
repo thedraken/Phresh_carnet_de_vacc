@@ -5,6 +5,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Collection;
 import java.util.Set;
 
@@ -22,22 +24,25 @@ public class User implements UserDetails, Authentication {
     private String email;
     @Column(nullable = false)
     private String password;
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
     @Column(nullable = false)
     private boolean enabled = true;
     @OneToMany(fetch = FetchType.EAGER)
     private Set<Vaccination> vaccinations;
+    @Column(nullable = false)
+    private LocalDate dateOfBirth;
 
     public User() {
     }
 
-    public User(String firstName, String surname, String email, String password, Set<Role> roles) {
+    public User(String firstName, String surname, String email, String password, Set<Role> roles, LocalDate dateOfBirth) {
         this.firstName = firstName;
         this.surname = surname;
         this.email = email;
         this.password = password;
         this.roles = roles;
+        this.dateOfBirth = dateOfBirth;
     }
 
     public Long getId() {
@@ -98,6 +103,22 @@ public class User implements UserDetails, Authentication {
 
     public void setVaccinations(Set<Vaccination> vaccinations) {
         this.vaccinations = vaccinations;
+    }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public Integer getAge() {
+        return Period.between(dateOfBirth, LocalDate.now()).getYears();
+    }
+
+    public Integer getAgeInDays() {
+        return Period.between(dateOfBirth, LocalDate.now()).getDays();
     }
 
     @Override

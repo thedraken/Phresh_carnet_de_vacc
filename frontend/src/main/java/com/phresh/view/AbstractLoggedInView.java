@@ -2,19 +2,17 @@ package com.phresh.view;
 
 import com.phresh.domain.User;
 import com.phresh.presenter.AbstractLoggedinPresenter;
-import com.vaadin.flow.component.ClickEvent;
-import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.sidenav.SideNav;
+import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 
@@ -25,22 +23,21 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
     public AbstractLoggedInView(P presenter) {
         this.presenter = presenter;
         User user = presenter.getUserFromAuthenticationContext();
-        HorizontalLayout header;
-        H1 logo = new H1("Phresh Vaccination schedule");
-        logo.addClassName("logo");
         if (user != null) {
+            H1 logo = new H1("Phresh Vaccination schedule");
+            logo.addClassName("logo");
             Span loggedUser = new Span("Welcome " + user.getFullName());
-            MenuBar menuBar = new MenuBar();
-            MenuItem vaccCardMenuItem = menuBar.addItem(new Icon(VaadinIcon.NEWSPAPER), "Vaccination Card", (ComponentEventListener<ClickEvent<MenuItem>>) menuItemClickEvent -> UI.getCurrent().navigate(VaccinationCardView.class));
-            vaccCardMenuItem.setAriaLabel("Vaccination Card");
-            MenuItem profileMenuItem = menuBar.addItem(new Icon(VaadinIcon.USER), "My Profile", (ComponentEventListener<ClickEvent<MenuItem>>) menuItemClickEvent -> UI.getCurrent().navigate(MyProfileView.class));
-            profileMenuItem.setAriaLabel("My Profile");
-            menuBar.addItem("Logout", (ComponentEventListener<ClickEvent<MenuItem>>) menuItemClickEvent -> presenter.doLogout());
-            header = new HorizontalLayout(logo, loggedUser, menuBar);
+            SideNav sideNav = new SideNav();
+            SideNavItem vaccinationCardSideItem = new SideNavItem("Vaccination Card", VaccinationCardView.class, VaadinIcon.CALENDAR.create());
+            SideNavItem myProfileSideItem = new SideNavItem("My Profile", MyProfileView.class, VaadinIcon.USER.create());
+            sideNav.addItem(vaccinationCardSideItem, myProfileSideItem);
+            Button logout = new Button("Logout", buttonClickEvent -> presenter.doLogout());
+            HorizontalLayout header = new HorizontalLayout(logo, loggedUser, logout);
             header.setSizeFull();
             header.setFlexGrow(1, logo);
             addToNavbar(header);
-            buildLayout();
+            addToDrawer(sideNav);
+            setContent(buildLayout());
         } else {
             UI.getCurrent().navigate(LoginView.class);
         }

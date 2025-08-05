@@ -3,7 +3,6 @@ package com.phresh.domain;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 public class Vaccination {
@@ -26,18 +25,18 @@ public class Vaccination {
     @Column
     private LocalDate dateOfRenewal;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<User> users;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private User user;
 
     public Vaccination() {
     }
 
-    public Vaccination(VaccinationType vaccinationType, LocalDate dateOfVaccination, String comments, LocalDate dateOfRenewal, List<User> users) {
+    public Vaccination(VaccinationType vaccinationType, LocalDate dateOfVaccination, String comments, LocalDate dateOfRenewal, User user) {
         this.vaccinationType = vaccinationType;
         this.dateOfVaccination = dateOfVaccination;
         this.comments = comments;
         this.dateOfRenewal = dateOfRenewal;
-        this.users = users;
+        this.user = user;
     }
 
     public Long getId() {
@@ -80,11 +79,11 @@ public class Vaccination {
         this.comments = comments;
     }
 
-    public List<User> getUsers() {
-        return users;
+    public User getUser() {
+        return user;
     }
 
-    public void setUser(List<User> users) {
-        this.users = users;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

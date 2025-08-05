@@ -14,19 +14,19 @@ public class VaccinationType {
     private String typeName;
     @Column
     private Integer numberOfDaysBeforeNextVaccination;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Disease> diseasesTreated;
     @Column
     private Integer minAgeForVaccineInDays;
     @Column
-    private Integer maxAgeForVaccineInYears;
+    private Double maxAgeForVaccineInYears;
     @Column
     private Integer maxNoOfDoses;
 
     public VaccinationType() {
     }
 
-    public VaccinationType(String typeName, Integer numberOfDaysBeforeNextVaccination, Set<Disease> diseasesTreated, Integer minAgeForVaccineInDays, Integer maxAgeForVaccineInYears, Integer maxNoOfDoses) {
+    public VaccinationType(String typeName, Integer numberOfDaysBeforeNextVaccination, Set<Disease> diseasesTreated, Integer minAgeForVaccineInDays, Double maxAgeForVaccineInYears, Integer maxNoOfDoses) {
         this.typeName = typeName;
         this.minAgeForVaccineInDays = minAgeForVaccineInDays;
         this.numberOfDaysBeforeNextVaccination = numberOfDaysBeforeNextVaccination;
@@ -75,11 +75,11 @@ public class VaccinationType {
         this.minAgeForVaccineInDays = minAgeForVaccineInDays;
     }
 
-    public Integer getMaxAgeForVaccineInYears() {
+    public Double getMaxAgeForVaccineInYears() {
         return maxAgeForVaccineInYears;
     }
 
-    public void setMaxAgeForVaccineInYears(Integer maxAgeForVaccine) {
+    public void setMaxAgeForVaccineInYears(Double maxAgeForVaccine) {
         this.maxAgeForVaccineInYears = maxAgeForVaccine;
     }
 
@@ -89,5 +89,10 @@ public class VaccinationType {
 
     public void setMaxNoOfDoses(Integer maxNoOfDoses) {
         this.maxNoOfDoses = maxNoOfDoses;
+    }
+
+    @Override
+    public String toString() {
+        return getTypeName();
     }
 }
