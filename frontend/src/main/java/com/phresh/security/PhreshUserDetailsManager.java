@@ -4,6 +4,8 @@ import com.phresh.UserService;
 import com.phresh.domain.User;
 import com.phresh.exceptions.RuleException;
 import com.phresh.repository.UserRepository;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -31,8 +33,12 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
 
     @Override
     public void createUser(UserDetails userDetails) {
-        //TODO
-        //userService.
+        User user = (User) userDetails;
+        try {
+            userService.saveUser(user);
+        } catch (RuleException e) {
+            showErrorMessage(e.getMessage());
+        }
     }
 
     @Override
@@ -45,10 +51,10 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
             try {
                 userService.saveUser(user);
             } catch (RuleException e) {
-                //TODO
+                showErrorMessage(e.getMessage());
             }
         } else {
-            //TODO Does this happen?
+            showErrorMessage("Invalid type");
         }
     }
 
@@ -59,8 +65,14 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
         try {
             userService.saveUser(user);
         } catch (RuleException e) {
-            //TODO
+            showErrorMessage(e.getMessage());
         }
+    }
+
+    private void showErrorMessage(String e) {
+        Notification notification = Notification.show(e);
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+        notification.setPosition(Notification.Position.MIDDLE);
     }
 
     @Override
@@ -72,7 +84,7 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
             try {
                 userService.saveUser(user);
             } catch (RuleException e) {
-                //TODO
+                showErrorMessage(e.getMessage());
             }
         }
     }
