@@ -11,7 +11,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <java.version>24</java.version>
+        <java.version>8</java.version>
         <vaadin.version>24.8.4</vaadin.version>
         <archunit.version>1.4.1</archunit.version>
     </properties>

@@ -40,7 +40,7 @@ public class SecurityConfig extends VaadinWebSecurity {
     @Bean
     public VaadinServiceInitListener loginConfigurer() {
         return (serviceInitEvent) -> {
-            var routeConfiguration = RouteConfiguration.forApplicationScope();
+            RouteConfiguration routeConfiguration = RouteConfiguration.forApplicationScope();
             routeConfiguration.setRoute(LoginView.LOGIN_PATH, LoginView.class);
         };
     }

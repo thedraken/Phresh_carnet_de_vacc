@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 @Route("vaccination_card")
@@ -145,7 +146,7 @@ public class VaccinationCardView extends AbstractGridView<VaccinationCardPresent
             return null;
         }).setHeader("Expected Date of Renewal").setSortable(true);
         grid.addColumn(Vaccination::getComments).setHeader("Comments");
-        grid.addColumn((ValueProvider<Vaccination, Object>) vaccination -> String.join(", ", vaccination.getVaccinationType().getDiseasesTreated().stream().map(Disease::getName).toList())).setHeader("Diseases Treated");
+        grid.addColumn((ValueProvider<Vaccination, Object>) vaccination -> vaccination.getVaccinationType().getDiseasesTreated().stream().map(Disease::getName).collect(Collectors.joining(", "))).setHeader("Diseases Treated");
     }
 
     @Override

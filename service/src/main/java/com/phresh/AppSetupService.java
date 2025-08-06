@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,11 +43,12 @@ public class AppSetupService {
 
         RoleAccess userRoleAccess = new RoleAccess(RoleAccess.ROLE_USER);
         RoleAccess adminRoleAccess = new RoleAccess(RoleAccess.ROLE_ADMIN);
-        roleAccessRepository.saveAll(List.of(userRoleAccess, adminRoleAccess));
 
-        Role userRole = new Role("member", Set.of(userRoleAccess));
-        Role adminRole = new Role("admin", Set.of(adminRoleAccess));
-        roleRepository.saveAll(List.of(userRole, adminRole));
+        roleAccessRepository.saveAll(Arrays.asList(userRoleAccess, adminRoleAccess));
+
+        Role userRole = new Role("member", Collections.singleton(userRoleAccess));
+        Role adminRole = new Role("admin", Collections.singleton(adminRoleAccess));
+        roleRepository.saveAll(Arrays.asList(userRole, adminRole));
 
 
         Disease measlesDisease = new Disease("Measles");
@@ -75,26 +74,26 @@ public class AppSetupService {
         Disease varicelleDisease = new Disease("Varicelle");
         Disease meningocoquesACWYDisease = new Disease("Méningocoques ACWY");
 
-        diseaseRepository.saveAll(List.of(measlesDisease, mumpsDisease, rubellaDisease, covidDisease, meningococcalGrpBDisease,
+        diseaseRepository.saveAll(Arrays.asList(measlesDisease, mumpsDisease, rubellaDisease, covidDisease, meningococcalGrpBDisease,
                 meningitisDisease, diphtheriaDisease, hepatitisBDisease, hibDisease, polioDisease, tetanusDisease, whoopingCoughDisease,
                 tuberculosisDisease, bronchiolitisDisease, rotavirusDisease, pneumococciDisease, meningocoqueDisease, rougeoleDisease,
                 oreillonsDisease, rubeoleDisease, varicelleDisease, meningocoquesACWYDisease));
 
-        VaccinationType mmrVaccinationType = new VaccinationType("MMR", 3 * 365, Set.of(measlesDisease, mumpsDisease, rubellaDisease), 1, null, 2);
-        VaccinationType covid19VaccinationType = new VaccinationType("COVID19", 365, Set.of(covidDisease), null, null, null);
-        VaccinationType bcgVaccinationType = new VaccinationType("BCG", null, Set.of(tuberculosisDisease), null, null, 1);
-        VaccinationType sixInOneVaccineType = new VaccinationType("6-in-1", 28, Set.of(diphtheriaDisease, hepatitisBDisease, hibDisease, polioDisease, tetanusDisease, whoopingCoughDisease), 56, 10d, 3);
-        VaccinationType threeInOneTeenageBooster = new VaccinationType("3-in-1 teenage booster", null, Set.of(diphtheriaDisease, tetanusDisease, polioDisease), 4745, null, 1);
-        VaccinationType rsvVaccinationType = new VaccinationType("RSV", null, Set.of(bronchiolitisDisease), 0, 0.5, null);
-        VaccinationType rotavirusVaccineType = new VaccinationType("Rotavirus Vaccine", 28, Set.of(rotavirusDisease), 2 * 28, null, 3);
-        VaccinationType pneumocoquesVaccineType = new VaccinationType("Pneumocoques Vaccine", 28 * 2, Set.of(pneumococciDisease), 2 * 28, null, 2);
-        VaccinationType pneumocoquesVaccineFinalType = new VaccinationType("Pneumocoques Vaccine Final", null, Set.of(pneumococciDisease), 11 * 28, null, 1);
-        VaccinationType meingocoqueBVaccineType = new VaccinationType("Méningocoque B Vaccine", 2 * 28, Set.of(meningocoqueDisease), 3 * 28, null, 2);
-        VaccinationType rorvCombinationVaccineType = new VaccinationType("RORV Combination Vaccine", null, Set.of(rougeoleDisease, oreillonsDisease, rubeoleDisease, varicelleDisease), 365, null, 1);
-        VaccinationType meningocoquesACWYVaccinationType = new VaccinationType("Méningocoques ACWY Vaccine", null, Set.of(meningocoquesACWYDisease), 13 * 28, null, 1);
+        VaccinationType mmrVaccinationType = new VaccinationType("MMR", 3 * 365, new HashSet<>(Arrays.asList(measlesDisease, mumpsDisease, rubellaDisease)), 1, null, 2);
+        VaccinationType covid19VaccinationType = new VaccinationType("COVID19", 365, new HashSet<>(Collections.singletonList(covidDisease)), null, null, null);
+        VaccinationType bcgVaccinationType = new VaccinationType("BCG", null, new HashSet<>(Collections.singletonList(tuberculosisDisease)), null, null, 1);
+        VaccinationType sixInOneVaccineType = new VaccinationType("6-in-1", 28, new HashSet<>(Arrays.asList(diphtheriaDisease, hepatitisBDisease, hibDisease, polioDisease, tetanusDisease, whoopingCoughDisease)), 56, 10d, 3);
+        VaccinationType threeInOneTeenageBooster = new VaccinationType("3-in-1 teenage booster", null, new HashSet<>(Arrays.asList(diphtheriaDisease, tetanusDisease, polioDisease)), 4745, null, 1);
+        VaccinationType rsvVaccinationType = new VaccinationType("RSV", null, new HashSet<>(Collections.singletonList(bronchiolitisDisease)), 0, 0.5, null);
+        VaccinationType rotavirusVaccineType = new VaccinationType("Rotavirus Vaccine", 28, new HashSet<>(Collections.singletonList(rotavirusDisease)), 2 * 28, null, 3);
+        VaccinationType pneumocoquesVaccineType = new VaccinationType("Pneumocoques Vaccine", 28 * 2, new HashSet<>(Collections.singletonList(pneumococciDisease)), 2 * 28, null, 2);
+        VaccinationType pneumocoquesVaccineFinalType = new VaccinationType("Pneumocoques Vaccine Final", null, new HashSet<>(Collections.singletonList(pneumococciDisease)), 11 * 28, null, 1);
+        VaccinationType meingocoqueBVaccineType = new VaccinationType("Méningocoque B Vaccine", 2 * 28, new HashSet<>(Collections.singletonList(meningocoqueDisease)), 3 * 28, null, 2);
+        VaccinationType rorvCombinationVaccineType = new VaccinationType("RORV Combination Vaccine", null, new HashSet<>(Arrays.asList(rougeoleDisease, oreillonsDisease, rubeoleDisease, varicelleDisease)), 365, null, 1);
+        VaccinationType meningocoquesACWYVaccinationType = new VaccinationType("Méningocoques ACWY Vaccine", null, new HashSet<>(Collections.singletonList(meningocoquesACWYDisease)), 13 * 28, null, 1);
 
 
-        vaccinationTypeRepository.saveAll(List.of(mmrVaccinationType, covid19VaccinationType, bcgVaccinationType, sixInOneVaccineType,
+        vaccinationTypeRepository.saveAll(Arrays.asList(mmrVaccinationType, covid19VaccinationType, bcgVaccinationType, sixInOneVaccineType,
                 threeInOneTeenageBooster, rsvVaccinationType, rotavirusVaccineType, pneumocoquesVaccineType, pneumocoquesVaccineFinalType,
                 meingocoqueBVaccineType, rorvCombinationVaccineType, meningocoquesACWYVaccinationType));
     }
@@ -109,11 +108,11 @@ public class AppSetupService {
         Role adminRole = roles.stream().filter(role -> role.getName().equals("admin")).findFirst().orElse(null);
         Role userRole = roles.stream().filter(role -> role.getName().equals("member")).findFirst().orElse(null);
 
-        User userAdmin = new User("Admin", "Admin", "phresh@admin.lu", passwordEncryptor.encode("Admin1-TestSystem"), Set.of(adminRole), LocalDate.of(1970, 1, 1));
-        User userWithSomeVaccinesDone = new User("Fred", "Flintstone", "fred.flintstone@post.lu", passwordEncryptor.encode("pebbleRockBamBam1-"), Set.of(userRole), LocalDate.of(1985, 1, 1));
-        User babyWithNoVaccines = new User("Rumble", "Flintstone", "rumble.flintstone@post.lu", passwordEncryptor.encode("babyFlinstoneJustBorn2025!"), Set.of(userRole), LocalDate.now());
+        User userAdmin = new User("Admin", "Admin", "phresh@admin.lu", passwordEncryptor.encode("Admin1-TestSystem"), Collections.singleton(adminRole), LocalDate.of(1970, 1, 1));
+        User userWithSomeVaccinesDone = new User("Fred", "Flintstone", "fred.flintstone@post.lu", passwordEncryptor.encode("pebbleRockBamBam1-"), Collections.singleton(userRole), LocalDate.of(1985, 1, 1));
+        User babyWithNoVaccines = new User("Rumble", "Flintstone", "rumble.flintstone@post.lu", passwordEncryptor.encode("babyFlinstoneJustBorn2025!"), Collections.singleton(userRole), LocalDate.now());
         logger.log(Level.CONFIG, "Saving users to database...");
-        userRepository.saveAll(List.of(userAdmin, userWithSomeVaccinesDone, babyWithNoVaccines));
+        userRepository.saveAll(Arrays.asList(userAdmin, userWithSomeVaccinesDone, babyWithNoVaccines));
 
         List<VaccinationType> vaccinationTypes = new ArrayList<>();
         vaccinationTypeRepository.findAll().forEach(vaccinationTypes::add);
@@ -129,7 +128,7 @@ public class AppSetupService {
 
         VaccinationSchedule mmrVaccinationScheduleFirst = new VaccinationSchedule(userWithSomeVaccinesDone, mmrVaccinationType, LocalDate.of(1986, 3, 30));
         VaccinationSchedule mmrVaccinationScheduleSecond = new VaccinationSchedule(userWithSomeVaccinesDone, mmrVaccinationType, LocalDate.of(1989, 3, 30));
-        vaccinationScheduleRepository.saveAll(List.of(mmrVaccinationScheduleFirst, mmrVaccinationScheduleSecond));
+        vaccinationScheduleRepository.saveAll(Arrays.asList(mmrVaccinationScheduleFirst, mmrVaccinationScheduleSecond));
 
         List<VaccinationSchedule> covidVaccineSchedules = new ArrayList<>();
         for (int i = 2020; i < 2024; i++) {
@@ -159,7 +158,7 @@ public class AppSetupService {
         covidVaccineSchedules.get(2).setVaccination(covidThirdVaccination);
 
         logger.log(Level.CONFIG, "Saving vaccination history to database...");
-        vaccinationRepository.saveAll(List.of(mmrFirstVaccination, mmrSecondVaccination, covidFirstVaccination, covidSecondVaccination, covidThirdVaccination));
+        vaccinationRepository.saveAll(Arrays.asList(mmrFirstVaccination, mmrSecondVaccination, covidFirstVaccination, covidSecondVaccination, covidThirdVaccination));
     }
 
     private List<VaccinationSchedule> setupDefaultVaccinationSchedule(User user, List<VaccinationType> vaccinationTypes) {

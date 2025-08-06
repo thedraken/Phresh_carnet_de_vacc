@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Set;
+import java.util.Collections;
 
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verify;
@@ -52,7 +52,7 @@ public class UserServiceTest {
         exception = assertThrows(RuleException.class, () -> userService.saveUser(user));
         Assertions.assertEquals("Missing role, please contact support", exception.getMessage());
 
-        user.setRoles(Set.of(new Role()));
+        user.setRoles(Collections.singleton(new Role()));
         userService.saveUser(user);
 
         verify(userRepository).findUserByEmail(user.getEmail());
@@ -65,7 +65,7 @@ public class UserServiceTest {
         Assertions.assertEquals("Missing user details", exception.getMessage());
 
         User user = Mockito.mock(User.class);
-        when(user.getRoles()).thenReturn(Set.of(new Role()));
+        when(user.getRoles()).thenReturn(Collections.singleton(new Role()));
         when(user.getFirstName()).thenReturn("First Name");
         when(user.getSurname()).thenReturn("Surname");
         when(user.getEmail()).thenReturn("Email");

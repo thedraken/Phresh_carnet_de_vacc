@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,7 +51,8 @@ public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<
             loginForm.setError(false);
             try {
                 loginPresenter.login(loginEvent.getUsername(), loginEvent.getPassword());
-                QueryParameters loggedInQueryParameter = new QueryParameters(Map.of(LOGGED_IN_MESSAGE, new ArrayList<>()));
+
+                QueryParameters loggedInQueryParameter = new QueryParameters(Collections.singletonMap(LOGGED_IN_MESSAGE, new ArrayList<>()));
                 UI.getCurrent().navigate(VaccinationCardView.class, loggedInQueryParameter);
                 loginForm.setError(false);
             } catch (RuleException | LoginException e) {

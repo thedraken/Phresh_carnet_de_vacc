@@ -89,7 +89,7 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
             if (maxSize > 5) {
                 maxSize = 5;
             }
-            List<VaccinationSchedule> vaccinationScheduleList = pendingItems.getUpcomingVaccinationSchedules().stream().sorted(Comparator.comparing(VaccinationSchedule::getScheduledDate)).toList().subList(0, maxSize - 1);
+            List<VaccinationSchedule> vaccinationScheduleList = pendingItems.getUpcomingVaccinationSchedules().stream().sorted(Comparator.comparing(VaccinationSchedule::getScheduledDate)).collect(Collectors.toList()).subList(0, maxSize - 1);
             Notification.show("Your next vaccinations due are: " +
                     String.join(", ", vaccinationScheduleList.stream().map(vaccinationSchedule ->
                                     vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")")

@@ -39,8 +39,9 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
     public void updateUser(UserDetails userDetails) {
         Authentication currentUser = this.securityContextHolderStrategy.getContext().getAuthentication();
         User user = userRepository.findUserByEmailAndEnabledTrue(currentUser.getPrincipal().toString());
-        if (currentUser instanceof User updatedUser) {
-            BeanUtils.copyProperties(user, updatedUser);
+        if (currentUser instanceof User) {
+            User castedUser = (User) currentUser;
+            BeanUtils.copyProperties(user, castedUser);
             try {
                 userService.saveUser(user);
             } catch (RuleException e) {
