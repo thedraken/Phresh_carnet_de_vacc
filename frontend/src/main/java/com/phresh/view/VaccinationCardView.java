@@ -150,7 +150,7 @@ public class VaccinationCardView extends AbstractGridView<VaccinationCardPresent
     }
 
     @Override
-    protected boolean checkMatches(Vaccination item, String searchTerm) {
+    public boolean checkMatches(Vaccination item, String searchTerm) {
         if (searchTerm.isEmpty()) {
             return true;
         }
