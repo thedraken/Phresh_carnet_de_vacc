@@ -19,7 +19,8 @@ public interface VaccinationRepository extends CrudRepository<Vaccination, Long>
             "(:fromDate IS NULL OR v.dateOfVaccination >= :fromDate) AND " +
             "(:toDate IS NULL OR v.dateOfVaccination <= :toDate) AND " +
             "(:vaccinationType IS NULL OR vt = :vaccinationType) AND " +
-            "(:diseaseTreated IS NULL OR d = :diseaseTreated) "
+            "(:diseaseTreated IS NULL OR d = :diseaseTreated) AND " +
+            "(:freeText IS NULL OR LOWER(vt.typeName) LIKE LOWER(CONCAT(:freeText, '%')) OR LOWER(d.name) LIKE LOWER(CONCAT(:freeText, '%')) OR LOWER(v.comments) LIKE LOWER(CONCAT(:freeText, '%')))"
     )
     List<Vaccination> findVaccinationsByFilter(String freeText, LocalDate fromDate, LocalDate toDate, Disease diseaseTreated, VaccinationType vaccinationType, User user);
 
