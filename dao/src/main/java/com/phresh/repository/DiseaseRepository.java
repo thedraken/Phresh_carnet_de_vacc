@@ -1,10 +1,15 @@
 package com.phresh.repository;
 
+import com.google.inject.Inject;
+import com.phresh.SQLLiteConfigure;
+import com.phresh.SessionHolder;
 import com.phresh.domain.Disease;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface DiseaseRepository extends CrudRepository<Disease, Long> {
 
+public class DiseaseRepository extends SessionHolder<Disease> {
+
+    @Inject
+    public DiseaseRepository(SQLLiteConfigure sqlLiteConfigure) {
+        super(sqlLiteConfigure, Disease.class);
+    }
 }

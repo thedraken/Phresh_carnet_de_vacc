@@ -31,7 +31,7 @@ public class LoginView extends VerticalLayout implements IView<LoginPresenter> {
             loginForm.setComponentError(null);
             presenter.doLogin(loginEvent.getLoginParameter("username"), loginEvent.getLoginParameter("password"));
         });
-        Button createUserButton = new Button("Create User", (Button.ClickListener) evenet -> UI.getCurrent().getNavigator().navigateTo(CreateUserView.route));
+        Button createUserButton = new Button("Create User", (Button.ClickListener) event -> UI.getCurrent().getNavigator().navigateTo(CreateUserView.route));
         //loginForm
         content.addComponent(loginForm);
         content.addComponent(createUserButton);

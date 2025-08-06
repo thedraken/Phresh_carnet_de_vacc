@@ -1,16 +1,18 @@
 package com.phresh.repository;
 
+import com.google.inject.Inject;
+import com.phresh.SQLLiteConfigure;
+import com.phresh.SessionHolder;
 import com.phresh.domain.Role;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+public class RoleRepository extends SessionHolder<Role> {
 
-@Repository
-public interface RoleRepository extends CrudRepository<Role, Long> {
+    @Inject
+    public RoleRepository(SQLLiteConfigure sqlLiteConfigure) {
+        super(sqlLiteConfigure, Role.class);
+    }
 
-
-    Role findRoleByName(String name);
-
-    List<Role> findAll();
+    public Role findRoleByName(String name) {
+        return null;
+    }
 }

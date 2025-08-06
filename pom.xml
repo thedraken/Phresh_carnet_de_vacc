@@ -15,6 +15,7 @@
         <vaadin.version>8.28.2</vaadin.version>
         <archunit.version>1.4.1</archunit.version>
         <jetty.plugin.version>9.4.57.v20241219</jetty.plugin.version>
+        <mysql.version>8.0.33</mysql.version>
     </properties>
 
     <parent>

@@ -1,13 +1,11 @@
 package com.phresh.domain;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
-public class Role implements GrantedAuthority {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,10 +45,5 @@ public class Role implements GrantedAuthority {
 
     public void setRoleAccess(Set<RoleAccess> roleAccess) {
         this.roleAccess = roleAccess;
-    }
-
-    @Override
-    public String getAuthority() {
-        return roleAccess.stream().map(RoleAccess::getAccessName).collect(Collectors.joining(";"));
     }
 }

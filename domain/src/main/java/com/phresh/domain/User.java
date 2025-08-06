@@ -1,17 +1,13 @@
 package com.phresh.domain;
 
 import jakarta.persistence.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.Collection;
 import java.util.Set;
 
 @Entity
-public class User implements UserDetails, Authentication {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,6 +30,7 @@ public class User implements UserDetails, Authentication {
     private LocalDate dateOfBirth;
     @OneToMany(fetch = FetchType.EAGER)
     private Set<VaccinationSchedule> vaccinationSchedules;
+    @Column(nullable = false)
     @Transient
     private boolean seenFirstNotification = false;
 
@@ -141,52 +138,11 @@ public class User implements UserDetails, Authentication {
         this.seenFirstNotification = seenFirstNotification;
     }
 
-    @Override
     public boolean isEnabled() {
         return enabled;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    @Override
-    public String getUsername() {
-        return getEmail();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
-    }
-
-    @Override
-    public Object getCredentials() {
-        return getPassword();
-    }
-
-    @Override
-    public Object getDetails() {
-        return getFullName();
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return getEmail();
-    }
-
-    @Override
-    public boolean isAuthenticated() {
-        return false;
-    }
-
-    @Override
-    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
-    }
-
-    @Override
-    public String getName() {
-        return getFullName();
     }
 }

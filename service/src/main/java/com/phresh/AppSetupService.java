@@ -1,19 +1,24 @@
 package com.phresh;
 
+import com.google.inject.Inject;
 import com.phresh.domain.*;
 import com.phresh.repository.*;
 import com.phresh.security.PasswordEncryptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Service
+
 public class AppSetupService {
 
     private static final Logger logger = Logger.getLogger(AppSetupService.class.getSimpleName());
@@ -27,7 +32,7 @@ public class AppSetupService {
     private final DiseaseRepository diseaseRepository;
     private final VaccinationScheduleRepository vaccinationScheduleRepository;
 
-    @Autowired
+    @Inject
     public AppSetupService(RoleRepository roleRepository, RoleAccessRepository roleAccessRepository, UserRepository userRepository, PasswordEncryptor passwordEncryptor, VaccinationTypeRepository vaccinationTypeRepository, VaccinationRepository vaccinationRepository, DiseaseRepository diseaseRepository, VaccinationScheduleRepository vaccinationScheduleRepository) {
         this.roleRepository = roleRepository;
         this.roleAccessRepository = roleAccessRepository;
@@ -48,7 +53,7 @@ public class AppSetupService {
 
         Role userRole = new Role("member", Collections.singleton(userRoleAccess));
         Role adminRole = new Role("admin", Collections.singleton(adminRoleAccess));
-        roleRepository.saveAll(Arrays.asList(userRole, adminRole));
+        //roleRepository.saveAll(Arrays.asList(userRole, adminRole));
 
 
         Disease measlesDisease = new Disease("Measles");
@@ -98,8 +103,8 @@ public class AppSetupService {
                 meingocoqueBVaccineType, rorvCombinationVaccineType, meningocoquesACWYVaccinationType));
     }
 
-    @Transactional
-    public void createTestUsers() {
+
+    public void createTestUsers() throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, InvalidKeySpecException, BadPaddingException, InvalidKeyException {
         logger.log(Level.SEVERE, "This is a setup for a test environment and should not be used in a production environment!");
         //TODO Not for production!
 
@@ -114,8 +119,7 @@ public class AppSetupService {
         logger.log(Level.CONFIG, "Saving users to database...");
         userRepository.saveAll(Arrays.asList(userAdmin, userWithSomeVaccinesDone, babyWithNoVaccines));
 
-        List<VaccinationType> vaccinationTypes = new ArrayList<>();
-        vaccinationTypeRepository.findAll().forEach(vaccinationTypes::add);
+        List<VaccinationType> vaccinationTypes = new ArrayList<>(vaccinationTypeRepository.findAll());
 
         List<VaccinationSchedule> babyVaccinationSchedule = setupDefaultVaccinationSchedule(babyWithNoVaccines, vaccinationTypes);
         vaccinationScheduleRepository.saveAll(babyVaccinationSchedule);

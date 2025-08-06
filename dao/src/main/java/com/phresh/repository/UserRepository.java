@@ -1,13 +1,24 @@
 package com.phresh.repository;
 
+import com.google.inject.Inject;
+import com.phresh.SQLLiteConfigure;
+import com.phresh.SessionHolder;
 import com.phresh.domain.User;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UserRepository extends CrudRepository<User, Long> {
 
-    User findUserByEmailAndEnabledTrue(String email);
+public class UserRepository extends SessionHolder<User> {
 
-    User findUserByEmail(String email);
+    @Inject
+    public UserRepository(SQLLiteConfigure sqlLiteConfigure) {
+        super(sqlLiteConfigure, User.class);
+    }
+
+    public User findUserByEmailAndEnabledTrue(String email) {
+        return null;
+    }
+
+    public User findUserByEmail(String email) {
+        return null;
+    }
+
 }

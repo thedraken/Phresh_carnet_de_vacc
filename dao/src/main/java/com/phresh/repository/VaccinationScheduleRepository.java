@@ -1,17 +1,27 @@
 package com.phresh.repository;
 
+import com.google.inject.Inject;
+import com.phresh.SQLLiteConfigure;
+import com.phresh.SessionHolder;
 import com.phresh.domain.User;
 import com.phresh.domain.VaccinationSchedule;
 import com.phresh.domain.VaccinationType;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Repository
-public interface VaccinationScheduleRepository extends CrudRepository<VaccinationSchedule, Long> {
+public class VaccinationScheduleRepository extends SessionHolder<VaccinationSchedule> {
 
-    List<VaccinationSchedule> findAllByVaccinationTypeAndUserAndVaccinationIsNull(VaccinationType vaccinationType, User user);
+    @Inject
+    public VaccinationScheduleRepository(SQLLiteConfigure sqlLiteConfigure) {
+        super(sqlLiteConfigure, VaccinationSchedule.class);
+    }
 
-    List<VaccinationSchedule> findAllByUserAndVaccinationIsNull(User user);
+    public List<VaccinationSchedule> findAllByVaccinationTypeAndUserAndVaccinationIsNull(VaccinationType vaccinationType, User user) {
+        return new ArrayList<>();
+    }
+
+    public List<VaccinationSchedule> findAllByUserAndVaccinationIsNull(User user) {
+        return new ArrayList<>();
+    }
 }

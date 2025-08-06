@@ -1,18 +1,15 @@
 package com.phresh;
 
+import com.google.inject.Inject;
 import com.phresh.domain.Vaccination;
 import com.phresh.domain.VaccinationSchedule;
 import com.phresh.exceptions.RuleException;
 import com.phresh.repository.VaccinationRepository;
 import com.phresh.repository.VaccinationScheduleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.logging.Logger;
 
-@Service
 public class VaccinationService {
 
     private static final Logger logger = Logger.getLogger(VaccinationService.class.getSimpleName());
@@ -20,13 +17,13 @@ public class VaccinationService {
     private final VaccinationRepository vaccinationRepository;
     private final VaccinationScheduleRepository vaccinationScheduleRepository;
 
-    @Autowired
+    @Inject
     public VaccinationService(VaccinationRepository vaccinationRepository, VaccinationScheduleRepository vaccinationScheduleRepository) {
         this.vaccinationRepository = vaccinationRepository;
         this.vaccinationScheduleRepository = vaccinationScheduleRepository;
     }
 
-    @Transactional(rollbackFor = RuleException.class)
+
     public void saveVaccination(Vaccination vaccination) throws RuleException {
         if (vaccination == null) {
             throw new RuleException("Missing vaccination details");

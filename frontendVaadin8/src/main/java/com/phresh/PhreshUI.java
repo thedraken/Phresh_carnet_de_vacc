@@ -11,6 +11,7 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.UI;
 
 import javax.servlet.annotation.WebServlet;
+import java.sql.SQLException;
 
 public class PhreshUI extends UI {
 
@@ -21,10 +22,16 @@ public class PhreshUI extends UI {
         navigator = new Navigator(this, this);
 
         Injector injector = Guice.createInjector(new PhreshModule());
+        SQLLiteConfigure sqlLiteConfigure = injector.getInstance(SQLLiteConfigure.class);
+        try {
+            sqlLiteConfigure.createDatabase();
 
-        navigator.addView(LoginView.route, injector.getInstance(LoginView.class));
-        navigator.addView(CreateUserView.route, injector.getInstance(CreateUserView.class));
-        navigator.navigateTo("");
+            navigator.addView(LoginView.route, injector.getInstance(LoginView.class));
+            navigator.addView(CreateUserView.route, injector.getInstance(CreateUserView.class));
+            navigator.navigateTo("");
+        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @WebServlet(urlPatterns = "/*", name = "PhreshUIServlet", asyncSupported = true)
