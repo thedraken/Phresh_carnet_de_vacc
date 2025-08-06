@@ -12,8 +12,9 @@
 
     <properties>
         <java.version>8</java.version>
-        <vaadin.version>24.8.4</vaadin.version>
+        <vaadin.version>8.28.2</vaadin.version>
         <archunit.version>1.4.1</archunit.version>
+        <jetty.plugin.version>9.4.57.v20241219</jetty.plugin.version>
     </properties>
 
     <parent>
@@ -27,7 +28,8 @@
         <module>domain</module>
         <module>dao</module>
         <module>service</module>
-        <module>frontend</module>
+        <!--<module>frontend</module>-->
+        <module>frontendVaadin8</module>
     </modules>
 
     <build>
@@ -41,6 +43,11 @@
                         <source>8</source>
                         <target>8</target>
                     </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jetty.ee10</groupId>
+                    <artifactId>jetty-ee10-maven-plugin</artifactId>
+                    <version>12.0.23</version>
                 </plugin>
             </plugins>
         </pluginManagement>
