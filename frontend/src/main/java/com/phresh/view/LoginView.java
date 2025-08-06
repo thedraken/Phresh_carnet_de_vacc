@@ -14,7 +14,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import com.vaadin.flow.spring.security.AuthenticationContext;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,16 +28,15 @@ import java.util.logging.Logger;
 @AnonymousAllowed
 public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<LoginPresenter> {
 
+    private static final Logger logger = Logger.getLogger(LoginView.class.getSimpleName());
+
     public static final String LOGIN_PATH = "login-action";
     public static final String LOGGED_IN_MESSAGE = "loggedIn";
-    private static final Logger logger = Logger.getLogger(LoginView.class.getSimpleName());
+
     private final LoginForm loginForm;
-    private final AuthenticationContext authenticationContext;
-    //private final LoginPresenter loginPresenter;
 
     @Autowired
-    public LoginView(LoginPresenter loginPresenter, AuthenticationContext authenticationContext) {
-        this.authenticationContext = authenticationContext;
+    public LoginView(LoginPresenter loginPresenter) {
         //this.loginPresenter = loginPresenter;
         VerticalLayout verticalLayout = new VerticalLayout();
         verticalLayout.addClassNames(LumoUtility.Display.FLEX, LumoUtility.JustifyContent.CENTER,
@@ -65,6 +63,8 @@ public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<
         HorizontalLayout buttonLayout = new HorizontalLayout(createUserButton);
         verticalLayout.add(loginForm, buttonLayout);
         add(verticalLayout);
+
+        loginPresenter.createTestUsers();
     }
 
     @Override
@@ -76,11 +76,11 @@ public class LoginView extends Main implements BeforeEnterObserver, IPhreshView<
             loginForm.setError(true);
         }
         if (beforeEnterEvent.getLocation().getQueryParameters().getParameters().containsKey("createUser")) {
-            Notification.show("User created successfully");
+            Notification.show("User created successfully", 5000, Notification.Position.MIDDLE);
         }
-        if (authenticationContext.isAuthenticated()) {
+        /*if (authenticationContext.isAuthenticated()) {
             // Redirect to the main view if the user is already logged in. This makes impersonation easier to work with.
             beforeEnterEvent.forwardTo("");
-        }
+        }*/
     }
 }

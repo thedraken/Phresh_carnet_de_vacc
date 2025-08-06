@@ -24,4 +24,5 @@ public interface VaccinationRepository extends CrudRepository<Vaccination, Long>
     List<Vaccination> findVaccinationsByFilter(String freeText, LocalDate fromDate, LocalDate toDate, Disease diseaseTreated, VaccinationType vaccinationType, User user);
 
     Integer countVaccinationByVaccinationTypeAndUser(VaccinationType vaccinationType, User user);
+
 }

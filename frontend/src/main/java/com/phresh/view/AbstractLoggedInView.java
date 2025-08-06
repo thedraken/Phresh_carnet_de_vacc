@@ -1,20 +1,31 @@
 package com.phresh.view;
 
 import com.phresh.domain.User;
+import com.phresh.domain.VaccinationSchedule;
+import com.phresh.exceptions.RuleException;
 import com.phresh.presenter.AbstractLoggedinPresenter;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?>> extends AppLayout implements IPhreshView<P>, BeforeEnterObserver {
 
@@ -30,7 +41,8 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
             SideNav sideNav = new SideNav();
             SideNavItem vaccinationCardSideItem = new SideNavItem("Vaccination Card", VaccinationCardView.class, VaadinIcon.CALENDAR.create());
             SideNavItem myProfileSideItem = new SideNavItem("My Profile", MyProfileView.class, VaadinIcon.USER.create());
-            sideNav.addItem(vaccinationCardSideItem, myProfileSideItem);
+            SideNavItem upcomingSchedule = new SideNavItem("Upcoming Schedule", ScheduledVaccinationView.class, VaadinIcon.SEARCH.create());
+            sideNav.addItem(vaccinationCardSideItem, upcomingSchedule, myProfileSideItem);
             Button logout = new Button("Logout", buttonClickEvent -> presenter.doLogout());
             HorizontalLayout header = new HorizontalLayout(logo, loggedUser, logout);
             header.setSizeFull();
@@ -53,5 +65,40 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
                 .containsKey(LoginView.LOGGED_IN_MESSAGE)) {
             Notification.show("Logged in Successfully");
         }
+
+        AbstractLoggedinPresenter.PendingItems pendingItems = presenter.getPendingVaccinationSchedules();
+        if (!pendingItems.getOutOfDateVaccinationSchedules().isEmpty()) {
+            String outOfDateItems = String.join(", ", pendingItems.getOutOfDateVaccinationSchedules().stream().map(vaccinationSchedule ->
+                    vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")").collect(Collectors.toSet()));
+            Notification notification = new Notification();
+            Div text = new Div(new Text("You are overdue for some vaccinations: " + outOfDateItems));
+
+            Button closeButton = new Button(VaadinIcon.CLOSE.create());
+            closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+            closeButton.setAriaLabel("Close");
+            closeButton.addClickListener(event -> notification.close());
+
+            HorizontalLayout layout = new HorizontalLayout(text, closeButton);
+            layout.setAlignItems(FlexComponent.Alignment.CENTER);
+            notification.add(layout);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
+        } else if (!pendingItems.getUpcomingVaccinationSchedules().isEmpty()) {
+            int maxSize = pendingItems.getUpcomingVaccinationSchedules().size();
+            if (maxSize > 5) {
+                maxSize = 5;
+            }
+            List<VaccinationSchedule> vaccinationScheduleList = pendingItems.getUpcomingVaccinationSchedules().stream().sorted(Comparator.comparing(VaccinationSchedule::getScheduledDate)).toList().subList(0, maxSize - 1);
+            Notification.show("Your next vaccinations due are: " +
+                    String.join(", ", vaccinationScheduleList.stream().map(vaccinationSchedule ->
+                                    vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")")
+                            .collect(Collectors.toSet())), 3000, Notification.Position.MIDDLE);
+        }
+    }
+
+    protected void showNotificationError(RuleException e) {
+        Notification notification = Notification.show(e.getMessage());
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
     }
 }

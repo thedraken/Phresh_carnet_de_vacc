@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 public class StartUpAppListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private final AppSetupService appSetupService;
-
-    //TODO Use this to create the test users or not
-    private final boolean createTestUsers = true;
+    public static final boolean createTestUsers = true;
 
     @Autowired
     public StartUpAppListener(AppSetupService appSetupService) {
@@ -20,6 +18,6 @@ public class StartUpAppListener implements ApplicationListener<ApplicationReadyE
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        appSetupService.startApp(createTestUsers);
+        appSetupService.startApp();
     }
 }

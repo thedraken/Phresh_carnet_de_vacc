@@ -5,10 +5,13 @@ import com.phresh.repository.*;
 import com.phresh.security.PasswordEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,9 +27,10 @@ public class AppSetupService {
     private final VaccinationTypeRepository vaccinationTypeRepository;
     private final VaccinationRepository vaccinationRepository;
     private final DiseaseRepository diseaseRepository;
+    private final VaccinationScheduleRepository vaccinationScheduleRepository;
 
     @Autowired
-    public AppSetupService(RoleRepository roleRepository, RoleAccessRepository roleAccessRepository, UserRepository userRepository, PasswordEncryptor passwordEncryptor, VaccinationTypeRepository vaccinationTypeRepository, VaccinationRepository vaccinationRepository, DiseaseRepository diseaseRepository) {
+    public AppSetupService(RoleRepository roleRepository, RoleAccessRepository roleAccessRepository, UserRepository userRepository, PasswordEncryptor passwordEncryptor, VaccinationTypeRepository vaccinationTypeRepository, VaccinationRepository vaccinationRepository, DiseaseRepository diseaseRepository, VaccinationScheduleRepository vaccinationScheduleRepository) {
         this.roleRepository = roleRepository;
         this.roleAccessRepository = roleAccessRepository;
         this.userRepository = userRepository;
@@ -34,9 +38,10 @@ public class AppSetupService {
         this.vaccinationTypeRepository = vaccinationTypeRepository;
         this.vaccinationRepository = vaccinationRepository;
         this.diseaseRepository = diseaseRepository;
+        this.vaccinationScheduleRepository = vaccinationScheduleRepository;
     }
 
-    public void startApp(boolean createTestUsers) {
+    public void startApp() {
 
         RoleAccess userRoleAccess = new RoleAccess(RoleAccess.ROLE_USER);
         RoleAccess adminRoleAccess = new RoleAccess(RoleAccess.ROLE_ADMIN);
@@ -78,40 +83,112 @@ public class AppSetupService {
         VaccinationType mmrVaccinationType = new VaccinationType("MMR", 3 * 365, Set.of(measlesDisease, mumpsDisease, rubellaDisease), 1, null, 2);
         VaccinationType covid19VaccinationType = new VaccinationType("COVID19", 365, Set.of(covidDisease), null, null, null);
         VaccinationType bcgVaccinationType = new VaccinationType("BCG", null, Set.of(tuberculosisDisease), null, null, 1);
-        VaccinationType sixInOneVaccine = new VaccinationType("6-in-1", 28, Set.of(diphtheriaDisease, hepatitisBDisease, hibDisease, polioDisease, tetanusDisease, whoopingCoughDisease), 56, 10d, 3);
+        VaccinationType sixInOneVaccineType = new VaccinationType("6-in-1", 28, Set.of(diphtheriaDisease, hepatitisBDisease, hibDisease, polioDisease, tetanusDisease, whoopingCoughDisease), 56, 10d, 3);
         VaccinationType threeInOneTeenageBooster = new VaccinationType("3-in-1 teenage booster", null, Set.of(diphtheriaDisease, tetanusDisease, polioDisease), 4745, null, 1);
         VaccinationType rsvVaccinationType = new VaccinationType("RSV", null, Set.of(bronchiolitisDisease), 0, 0.5, null);
         VaccinationType rotavirusVaccineType = new VaccinationType("Rotavirus Vaccine", 28, Set.of(rotavirusDisease), 2 * 28, null, 3);
         VaccinationType pneumocoquesVaccineType = new VaccinationType("Pneumocoques Vaccine", 28 * 2, Set.of(pneumococciDisease), 2 * 28, null, 2);
         VaccinationType pneumocoquesVaccineFinalType = new VaccinationType("Pneumocoques Vaccine Final", null, Set.of(pneumococciDisease), 11 * 28, null, 1);
-        VaccinationType meingocoqueVaccineType = new VaccinationType("Méningocoque Vaccine", 2 * 28, Set.of(meningocoqueDisease), 3 * 28, null, 2);
+        VaccinationType meingocoqueBVaccineType = new VaccinationType("Méningocoque B Vaccine", 2 * 28, Set.of(meningocoqueDisease), 3 * 28, null, 2);
         VaccinationType rorvCombinationVaccineType = new VaccinationType("RORV Combination Vaccine", null, Set.of(rougeoleDisease, oreillonsDisease, rubeoleDisease, varicelleDisease), 365, null, 1);
         VaccinationType meningocoquesACWYVaccinationType = new VaccinationType("Méningocoques ACWY Vaccine", null, Set.of(meningocoquesACWYDisease), 13 * 28, null, 1);
 
 
-        vaccinationTypeRepository.saveAll(List.of(mmrVaccinationType, covid19VaccinationType, bcgVaccinationType, sixInOneVaccine,
+        vaccinationTypeRepository.saveAll(List.of(mmrVaccinationType, covid19VaccinationType, bcgVaccinationType, sixInOneVaccineType,
                 threeInOneTeenageBooster, rsvVaccinationType, rotavirusVaccineType, pneumocoquesVaccineType, pneumocoquesVaccineFinalType,
-                meingocoqueVaccineType, rorvCombinationVaccineType, meningocoquesACWYVaccinationType));
+                meingocoqueBVaccineType, rorvCombinationVaccineType, meningocoquesACWYVaccinationType));
+    }
 
-        if (createTestUsers) {
-            logger.log(Level.SEVERE, "This is a setup for a test environment and should not be used in a production environment!");
-            //TODO Not for production!
-            User userAdmin = new User("Admin", "Admin", "phresh@admin.lu", passwordEncryptor.encode("Admin1-TestSystem"), Set.of(adminRole), LocalDate.of(1970, 1, 1));
-            User userWithSomeVaccinesDone = new User("Fred", "Flintstone", "fred.flintstone@post.lu", passwordEncryptor.encode("pebbleRockBamBam1-"), Set.of(userRole), LocalDate.of(1985, 1, 1));
-            User babyWithNoVaccines = new User("Rumble", "Flintstone", "rumble.flintstone@post.lu", passwordEncryptor.encode("babyFlinstoneJustBorn2025!"), Set.of(userRole), LocalDate.now());
-            logger.log(Level.CONFIG, "Saving users to database...");
-            userRepository.saveAll(List.of(userAdmin, userWithSomeVaccinesDone, babyWithNoVaccines));
+    @Transactional
+    public void createTestUsers() {
+        logger.log(Level.SEVERE, "This is a setup for a test environment and should not be used in a production environment!");
+        //TODO Not for production!
 
-            Vaccination mmrFirstVaccination = new Vaccination(mmrVaccinationType, LocalDate.of(1986, 4, 15), null, LocalDate.of(1989, 4, 15), userWithSomeVaccinesDone);
-            Vaccination mmrSecondVaccination = new Vaccination(mmrVaccinationType, LocalDate.of(1989, 5, 20), null, null, userWithSomeVaccinesDone);
-            Vaccination covidFirstVaccination = new Vaccination(covid19VaccinationType, LocalDate.of(2020, 11, 15), null, LocalDate.of(2021, 11, 15), userWithSomeVaccinesDone);
-            Vaccination covidSecondVaccination = new Vaccination(covid19VaccinationType, LocalDate.of(2021, 11, 18), null, LocalDate.of(2022, 11, 18), userWithSomeVaccinesDone);
-            Vaccination covidThirdVaccination = new Vaccination(covid19VaccinationType, LocalDate.of(2022, 12, 8), "Minor reaction, sent for more analysis", LocalDate.of(2023, 12, 8), userWithSomeVaccinesDone);
+        List<Role> roles = roleRepository.findAll();
 
-            logger.log(Level.CONFIG, "Saving vaccination history to database...");
-            vaccinationRepository.saveAll(List.of(mmrFirstVaccination, mmrSecondVaccination, covidFirstVaccination, covidSecondVaccination, covidThirdVaccination));
+        Role adminRole = roles.stream().filter(role -> role.getName().equals("admin")).findFirst().orElse(null);
+        Role userRole = roles.stream().filter(role -> role.getName().equals("member")).findFirst().orElse(null);
+
+        User userAdmin = new User("Admin", "Admin", "phresh@admin.lu", passwordEncryptor.encode("Admin1-TestSystem"), Set.of(adminRole), LocalDate.of(1970, 1, 1));
+        User userWithSomeVaccinesDone = new User("Fred", "Flintstone", "fred.flintstone@post.lu", passwordEncryptor.encode("pebbleRockBamBam1-"), Set.of(userRole), LocalDate.of(1985, 1, 1));
+        User babyWithNoVaccines = new User("Rumble", "Flintstone", "rumble.flintstone@post.lu", passwordEncryptor.encode("babyFlinstoneJustBorn2025!"), Set.of(userRole), LocalDate.now());
+        logger.log(Level.CONFIG, "Saving users to database...");
+        userRepository.saveAll(List.of(userAdmin, userWithSomeVaccinesDone, babyWithNoVaccines));
+
+        List<VaccinationType> vaccinationTypes = new ArrayList<>();
+        vaccinationTypeRepository.findAll().forEach(vaccinationTypes::add);
+
+        List<VaccinationSchedule> babyVaccinationSchedule = setupDefaultVaccinationSchedule(babyWithNoVaccines, vaccinationTypes);
+        vaccinationScheduleRepository.saveAll(babyVaccinationSchedule);
+
+        List<VaccinationSchedule> adultVaccinationSchedules = setupDefaultVaccinationSchedule(userWithSomeVaccinesDone, vaccinationTypes);
+        vaccinationScheduleRepository.saveAll(adultVaccinationSchedules);
+
+        VaccinationType mmrVaccinationType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("MMR")).findFirst().orElse(null);
+        VaccinationType covid19VaccinationType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("COVID19")).findFirst().orElse(null);
+
+        VaccinationSchedule mmrVaccinationScheduleFirst = new VaccinationSchedule(userWithSomeVaccinesDone, mmrVaccinationType, LocalDate.of(1986, 3, 30));
+        VaccinationSchedule mmrVaccinationScheduleSecond = new VaccinationSchedule(userWithSomeVaccinesDone, mmrVaccinationType, LocalDate.of(1989, 3, 30));
+        vaccinationScheduleRepository.saveAll(List.of(mmrVaccinationScheduleFirst, mmrVaccinationScheduleSecond));
+
+        List<VaccinationSchedule> covidVaccineSchedules = new ArrayList<>();
+        for (int i = 2020; i < 2024; i++) {
+            VaccinationSchedule covidVaccinationSchedule = new VaccinationSchedule(userWithSomeVaccinesDone, covid19VaccinationType, LocalDate.of(i, 3, 30));
+            vaccinationScheduleRepository.save(covidVaccinationSchedule);
+            covidVaccineSchedules.add(covidVaccinationSchedule);
         }
 
 
+        adultVaccinationSchedules.forEach(vs -> {
+            int randomNum = ThreadLocalRandom.current().nextInt(-7, 8);
+            Vaccination vaccination = new Vaccination(vs.getVaccinationType(), vs.getScheduledDate().plusDays(randomNum), null, userWithSomeVaccinesDone, vs);
+            vs.setVaccination(vaccination);
+            vaccinationRepository.save(vaccination);
+        });
+
+
+        Vaccination mmrFirstVaccination = new Vaccination(mmrVaccinationType, LocalDate.of(1986, 4, 15), null, userWithSomeVaccinesDone, mmrVaccinationScheduleFirst);
+        mmrVaccinationScheduleFirst.setVaccination(mmrFirstVaccination);
+        Vaccination mmrSecondVaccination = new Vaccination(mmrVaccinationType, LocalDate.of(1989, 5, 20), null, userWithSomeVaccinesDone, mmrVaccinationScheduleSecond);
+        mmrVaccinationScheduleSecond.setVaccination(mmrSecondVaccination);
+        Vaccination covidFirstVaccination = new Vaccination(covid19VaccinationType, LocalDate.of(2020, 11, 15), null, userWithSomeVaccinesDone, covidVaccineSchedules.get(0));
+        covidVaccineSchedules.get(0).setVaccination(covidFirstVaccination);
+        Vaccination covidSecondVaccination = new Vaccination(covid19VaccinationType, LocalDate.of(2021, 11, 18), null, userWithSomeVaccinesDone, covidVaccineSchedules.get(1));
+        covidVaccineSchedules.get(1).setVaccination(covidSecondVaccination);
+        Vaccination covidThirdVaccination = new Vaccination(covid19VaccinationType, LocalDate.of(2022, 12, 8), "Minor reaction, sent for more analysis", userWithSomeVaccinesDone, covidVaccineSchedules.get(2));
+        covidVaccineSchedules.get(2).setVaccination(covidThirdVaccination);
+
+        logger.log(Level.CONFIG, "Saving vaccination history to database...");
+        vaccinationRepository.saveAll(List.of(mmrFirstVaccination, mmrSecondVaccination, covidFirstVaccination, covidSecondVaccination, covidThirdVaccination));
+    }
+
+    private List<VaccinationSchedule> setupDefaultVaccinationSchedule(User user, List<VaccinationType> vaccinationTypes) {
+        List<VaccinationSchedule> vaccinationSchedules = new ArrayList<>();
+        VaccinationType rsvVaccinationType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("RSV")).findAny().orElse(null);
+        VaccinationType sixInOneVaccineType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("6-in-1")).findAny().orElse(null);
+        VaccinationType rotavirusVaccineType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("Rotavirus Vaccine")).findAny().orElse(null);
+        VaccinationType pneumocoquesVaccineType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("Pneumocoques Vaccine")).findAny().orElse(null);
+        VaccinationType meingocoqueBVaccineType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("Méningocoque B Vaccine")).findAny().orElse(null);
+        VaccinationType pneumocoquesVaccineFinalType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("Pneumocoques Vaccine Final")).findAny().orElse(null);
+        VaccinationType rorvCombinationVaccineType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("RORV Combination Vaccine")).findAny().orElse(null);
+        VaccinationType meningocoquesACWYVaccinationType = vaccinationTypes.stream().filter(vt -> vt.getTypeName().equals("Méningocoques ACWY Vaccine")).findAny().orElse(null);
+
+        vaccinationSchedules.add(new VaccinationSchedule(user, rsvVaccinationType, user.getDateOfBirth()));
+        vaccinationSchedules.add(new VaccinationSchedule(user, sixInOneVaccineType, user.getDateOfBirth().plusDays(2 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, rotavirusVaccineType, user.getDateOfBirth().plusDays(2 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, pneumocoquesVaccineType, user.getDateOfBirth().plusDays(2 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, rotavirusVaccineType, user.getDateOfBirth().plusDays(3 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, meingocoqueBVaccineType, user.getDateOfBirth().plusDays(3 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, sixInOneVaccineType, user.getDateOfBirth().plusDays(4 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, pneumocoquesVaccineType, user.getDateOfBirth().plusDays(4 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, rotavirusVaccineType, user.getDateOfBirth().plusDays(4 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, meingocoqueBVaccineType, user.getDateOfBirth().plusDays(5 * 28)));
+        //Only if not received at birth
+        //vaccinationSchedules.add(new VaccinationSchedule(user, rsvVaccinationType, user.getDateOfBirth().plusDays(5*28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, sixInOneVaccineType, user.getDateOfBirth().plusDays(11 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, pneumocoquesVaccineFinalType, user.getDateOfBirth().plusDays(11 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, rorvCombinationVaccineType, user.getDateOfBirth().plusDays(12 * 28)));
+        vaccinationSchedules.add(new VaccinationSchedule(user, meningocoquesACWYVaccinationType, user.getDateOfBirth().plusDays(13 * 28)));
+        return vaccinationSchedules;
     }
 }

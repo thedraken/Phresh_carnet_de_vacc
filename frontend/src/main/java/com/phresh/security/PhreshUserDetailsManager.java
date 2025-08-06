@@ -38,7 +38,7 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
     @Override
     public void updateUser(UserDetails userDetails) {
         Authentication currentUser = this.securityContextHolderStrategy.getContext().getAuthentication();
-        User user = userRepository.findUserByEmail(currentUser.getPrincipal().toString());
+        User user = userRepository.findUserByEmailAndEnabledTrue(currentUser.getPrincipal().toString());
         if (currentUser instanceof User updatedUser) {
             BeanUtils.copyProperties(user, updatedUser);
             try {
@@ -65,7 +65,7 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
     @Override
     public void changePassword(String oldPassword, String newPassword) {
         Authentication currentUser = this.securityContextHolderStrategy.getContext().getAuthentication();
-        User user = userRepository.findUserByEmail(currentUser.getPrincipal().toString());
+        User user = userRepository.findUserByEmailAndEnabledTrue(currentUser.getPrincipal().toString());
         if (user != null && user.getPassword().equals(passwordEncryptor.encode(oldPassword))) {
             user.setPassword(passwordEncryptor.encode(newPassword));
             try {
@@ -78,12 +78,12 @@ public class PhreshUserDetailsManager implements UserDetailsManager {
 
     @Override
     public boolean userExists(String username) {
-        return userRepository.findUserByEmail(username) != null;
+        return userRepository.findUserByEmailAndEnabledTrue(username) != null;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findUserByEmail(username);
+        return userRepository.findUserByEmailAndEnabledTrue(username);
     }
 
     public PasswordEncryptor getPasswordEncryptor() {

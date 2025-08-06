@@ -21,22 +21,21 @@ public class Vaccination {
     @Column(length = 500)
     private String comments;
 
-    @Temporal(TemporalType.DATE)
-    @Column
-    private LocalDate dateOfRenewal;
-
     @ManyToOne(fetch = FetchType.EAGER)
     private User user;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private VaccinationSchedule scheduledVaccination;
 
     public Vaccination() {
     }
 
-    public Vaccination(VaccinationType vaccinationType, LocalDate dateOfVaccination, String comments, LocalDate dateOfRenewal, User user) {
+    public Vaccination(VaccinationType vaccinationType, LocalDate dateOfVaccination, String comments, User user, VaccinationSchedule scheduledVaccination) {
         this.vaccinationType = vaccinationType;
         this.dateOfVaccination = dateOfVaccination;
         this.comments = comments;
-        this.dateOfRenewal = dateOfRenewal;
         this.user = user;
+        this.scheduledVaccination = scheduledVaccination;
     }
 
     public Long getId() {
@@ -63,14 +62,6 @@ public class Vaccination {
         this.dateOfVaccination = dateOfVaccination;
     }
 
-    public LocalDate getDateOfRenewal() {
-        return dateOfRenewal;
-    }
-
-    public void setDateOfRenewal(LocalDate dateOfRenewal) {
-        this.dateOfRenewal = dateOfRenewal;
-    }
-
     public String getComments() {
         return comments;
     }
@@ -85,5 +76,13 @@ public class Vaccination {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public VaccinationSchedule getScheduledVaccination() {
+        return scheduledVaccination;
+    }
+
+    public void setScheduledVaccination(VaccinationSchedule scheduledVaccination) {
+        this.scheduledVaccination = scheduledVaccination;
     }
 }

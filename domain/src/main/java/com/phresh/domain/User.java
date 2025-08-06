@@ -32,6 +32,8 @@ public class User implements UserDetails, Authentication {
     private Set<Vaccination> vaccinations;
     @Column(nullable = false)
     private LocalDate dateOfBirth;
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<VaccinationSchedule> vaccinationSchedules;
 
     public User() {
     }
@@ -119,6 +121,14 @@ public class User implements UserDetails, Authentication {
 
     public Integer getAgeInDays() {
         return Period.between(dateOfBirth, LocalDate.now()).getDays();
+    }
+
+    public Set<VaccinationSchedule> getVaccinationSchedules() {
+        return vaccinationSchedules;
+    }
+
+    public void setVaccinationSchedules(Set<VaccinationSchedule> vaccinationSchedules) {
+        this.vaccinationSchedules = vaccinationSchedules;
     }
 
     @Override

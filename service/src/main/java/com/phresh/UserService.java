@@ -46,4 +46,10 @@ public class UserService {
         userRepository.save(user);
         logger.config("Saved user: " + user.getId());
     }
+
+    @Transactional(rollbackFor = RuleException.class)
+    public void deleteUser(User user) throws RuleException {
+        user.setEnabled(false);
+        saveUser(user);
+    }
 }
