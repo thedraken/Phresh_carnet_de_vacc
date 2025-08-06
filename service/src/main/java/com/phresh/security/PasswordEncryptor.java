@@ -12,7 +12,7 @@ public class PasswordEncryptor implements PasswordEncoder {
 
     private final Pbkdf2PasswordEncoder passwordEncoder;
 
-    protected PasswordEncryptor() {
+    public PasswordEncryptor() {
         passwordEncoder = new Pbkdf2PasswordEncoder(new String(new char[]{'v', 't', 'x', '1', 'p', 'm', 'o', 'r', 't', 'P', 'h', 'r', 'e', 's', 'h', '2', '0', '2', '5', '!', '-'}),
                 32, 2048, Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
     }

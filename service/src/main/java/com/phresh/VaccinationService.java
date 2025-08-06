@@ -28,18 +28,25 @@ public class VaccinationService {
 
     @Transactional(rollbackFor = RuleException.class)
     public void saveVaccination(Vaccination vaccination) throws RuleException {
+        if (vaccination == null) {
+            throw new RuleException("Missing vaccination details");
+        }
         if (vaccination.getVaccinationType() == null) {
             throw new RuleException("Please enter a vaccination type");
+        }
+        if (vaccination.getUser() == null) {
+            throw new RuleException("Missing user details");
         }
         if (vaccination.getDateOfVaccination() == null) {
             throw new RuleException("Please enter a date of vaccination");
         }
         if (vaccination.getDateOfVaccination().isAfter(LocalDate.now())) {
-            throw new RuleException("Date of vaccination is before current date");
+            throw new RuleException("Date of vaccination is after current date");
         }
         if (vaccination.getDateOfVaccination().isBefore(vaccination.getUser().getDateOfBirth())) {
             throw new RuleException("Date of vaccination is before your date of birth");
         }
+
         Integer numberOfVaccines = vaccinationRepository.countVaccinationByVaccinationTypeAndUser(vaccination.getVaccinationType(), vaccination.getUser());
 
         if (numberOfVaccines != null && vaccination.getVaccinationType().getMaxNoOfDoses() != null && ++numberOfVaccines > vaccination.getVaccinationType().getMaxNoOfDoses()) {
