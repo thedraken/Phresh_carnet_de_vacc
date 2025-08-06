@@ -24,8 +24,11 @@ public class UserService {
 
     @Transactional(rollbackFor = RuleException.class)
     public void saveUser(User user) throws RuleException {
-        if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
-            throw new RuleException("Please enter full name");
+        if (user == null) {
+            throw new RuleException("Missing user details");
+        }
+        if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
+            throw new RuleException("Please enter first name");
         }
         if (user.getSurname() == null || user.getSurname().trim().isEmpty()) {
             throw new RuleException("Please enter surname");
@@ -36,7 +39,7 @@ public class UserService {
         if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             throw new RuleException("Please enter password");
         }
-        if (user.getRoles().isEmpty()) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
             throw new RuleException("Missing role, please contact support");
         }
         User userCheck = userRepository.findUserByEmail(user.getEmail());
@@ -49,6 +52,9 @@ public class UserService {
 
     @Transactional(rollbackFor = RuleException.class)
     public void deleteUser(User user) throws RuleException {
+        if (user == null) {
+            throw new RuleException("Missing user details");
+        }
         user.setEnabled(false);
         saveUser(user);
     }
