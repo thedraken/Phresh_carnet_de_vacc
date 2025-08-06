@@ -1,4 +1,5 @@
-import com.phresh.UserService;
+package com.phresh;
+
 import com.phresh.domain.Role;
 import com.phresh.domain.User;
 import com.phresh.exceptions.RuleException;
@@ -14,11 +15,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
@@ -27,29 +27,30 @@ public class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+
     @Test
     public void testSaveUser() throws RuleException {
-        Exception exception = assertThrows(RuleException.class, () -> userService.saveUser(null));
+        Exception exception = Assertions.assertThrows(RuleException.class, () -> userService.saveUser(null));
         Assertions.assertEquals("Missing user details", exception.getMessage());
 
         User user = new User();
-        exception = assertThrows(RuleException.class, () -> userService.saveUser(user));
+        exception = Assertions.assertThrows(RuleException.class, () -> userService.saveUser(user));
         Assertions.assertEquals("Please enter first name", exception.getMessage());
 
         user.setFirstName("First Name");
-        exception = assertThrows(RuleException.class, () -> userService.saveUser(user));
+        exception = Assertions.assertThrows(RuleException.class, () -> userService.saveUser(user));
         Assertions.assertEquals("Please enter surname", exception.getMessage());
 
         user.setSurname("Surname");
-        exception = assertThrows(RuleException.class, () -> userService.saveUser(user));
+        exception = Assertions.assertThrows(RuleException.class, () -> userService.saveUser(user));
         Assertions.assertEquals("Please enter email", exception.getMessage());
 
         user.setEmail("Email");
-        exception = assertThrows(RuleException.class, () -> userService.saveUser(user));
+        exception = Assertions.assertThrows(RuleException.class, () -> userService.saveUser(user));
         Assertions.assertEquals("Please enter password", exception.getMessage());
 
         user.setPassword("Password");
-        exception = assertThrows(RuleException.class, () -> userService.saveUser(user));
+        exception = Assertions.assertThrows(RuleException.class, () -> userService.saveUser(user));
         Assertions.assertEquals("Missing role, please contact support", exception.getMessage());
 
         user.setRoles(Collections.singleton(new Role()));
@@ -61,7 +62,7 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUser() throws RuleException {
-        Exception exception = assertThrows(RuleException.class, () -> userService.deleteUser(null));
+        Exception exception = Assertions.assertThrows(RuleException.class, () -> userService.deleteUser(null));
         Assertions.assertEquals("Missing user details", exception.getMessage());
 
         User user = Mockito.mock(User.class);

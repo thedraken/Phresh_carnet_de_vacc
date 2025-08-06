@@ -47,14 +47,16 @@ public abstract class AbstractGridView<P extends AbstractLoggedinPresenter<?>, T
         filterField.setValueChangeMode(ValueChangeMode.EAGER);
 
         Component layOutAboveGrid = addLayoutAboveGrid();
-        if (layOutAboveGrid != null) {
-            windowLayout.add(addLayoutAboveGrid(), filterField, grid);
-        } else {
-            windowLayout.add(filterField, grid);
+        if (windowLayout != null) {
+            if (layOutAboveGrid != null) {
+                windowLayout.add(addLayoutAboveGrid(), filterField, grid);
+            } else {
+                windowLayout.add(filterField, grid);
+            }
+            windowLayout.setSizeFull();
+            registrations = new ArrayList<>();
+            doInitSearch();
         }
-        windowLayout.setSizeFull();
-        registrations = new ArrayList<>();
-        doInitSearch();
     }
 
     protected abstract Component addLayoutAboveGrid();

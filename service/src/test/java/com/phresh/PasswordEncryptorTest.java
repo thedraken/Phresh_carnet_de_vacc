@@ -1,3 +1,5 @@
+package com.phresh;
+
 import com.phresh.security.PasswordEncryptor;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,20 +1,25 @@
-import com.phresh.domain.User;
+package com.phresh.view;
+
 import com.phresh.domain.Vaccination;
 import com.phresh.domain.VaccinationType;
 import com.phresh.presenter.VaccinationCardPresenter;
-import com.phresh.view.VaccinationCardView;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @ExtendWith(MockitoExtension.class)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
 public class VaccinationCardViewTest {
 
     @Mock
@@ -23,14 +28,8 @@ public class VaccinationCardViewTest {
     @InjectMocks
     private VaccinationCardView vaccinationCardView;
 
-    public void setup() {
-        User user = Mockito.mock(User.class);
-        Mockito.when(vaccinationCardPresenter.getUserFromAuthenticationContext()).thenReturn(user);
-    }
-
-    //@Test
+    @Test
     public void testCheckMatches() {
-        setup();
 
         Vaccination item = Mockito.mock(Vaccination.class);
         VaccinationType type = Mockito.mock(VaccinationType.class);

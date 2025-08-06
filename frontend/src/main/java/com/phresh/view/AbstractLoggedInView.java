@@ -50,8 +50,6 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
             addToNavbar(header);
             addToDrawer(sideNav);
             setContent(buildLayout());
-        } else {
-            UI.getCurrent().navigate(LoginView.class);
         }
     }
 
@@ -65,37 +63,40 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
                 .containsKey(LoginView.LOGGED_IN_MESSAGE)) {
             Notification.show("Logged in Successfully");
             presenter.getUserFromAuthenticationContext().setSeenFirstNotification(false);
-        }
+        } else if (presenter.getUserFromAuthenticationContext() == null) {
+            UI.getCurrent().navigate(LoginView.class);
+        } else {
 
-        AbstractLoggedinPresenter.PendingItems pendingItems = presenter.getPendingVaccinationSchedules();
-        if (!presenter.getUserFromAuthenticationContext().isSeenFirstNotification() && !pendingItems.getOutOfDateVaccinationSchedules().isEmpty()) {
-            presenter.getUserFromAuthenticationContext().setSeenFirstNotification(true);
-            String outOfDateItems = String.join(", ", pendingItems.getOutOfDateVaccinationSchedules().stream().map(vaccinationSchedule ->
-                    vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")").collect(Collectors.toSet()));
-            Notification notification = new Notification();
-            Div text = new Div(new Text("You are overdue for some vaccinations: " + outOfDateItems));
+            AbstractLoggedinPresenter.PendingItems pendingItems = presenter.getPendingVaccinationSchedules();
+            if (!presenter.getUserFromAuthenticationContext().isSeenFirstNotification() && !pendingItems.getOutOfDateVaccinationSchedules().isEmpty()) {
+                presenter.getUserFromAuthenticationContext().setSeenFirstNotification(true);
+                String outOfDateItems = String.join(", ", pendingItems.getOutOfDateVaccinationSchedules().stream().map(vaccinationSchedule ->
+                        vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")").collect(Collectors.toSet()));
+                Notification notification = new Notification();
+                Div text = new Div(new Text("You are overdue for some vaccinations: " + outOfDateItems));
 
-            Button closeButton = new Button(VaadinIcon.CLOSE.create());
-            closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-            closeButton.setAriaLabel("Close");
-            closeButton.addClickListener(event -> notification.close());
+                Button closeButton = new Button(VaadinIcon.CLOSE.create());
+                closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+                closeButton.setAriaLabel("Close");
+                closeButton.addClickListener(event -> notification.close());
 
-            HorizontalLayout layout = new HorizontalLayout(text, closeButton);
-            layout.setAlignItems(FlexComponent.Alignment.CENTER);
-            notification.add(layout);
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            notification.setPosition(Notification.Position.MIDDLE);
-            notification.open();
-        } else if (!pendingItems.getUpcomingVaccinationSchedules().isEmpty()) {
-            int maxSize = pendingItems.getUpcomingVaccinationSchedules().size();
-            if (maxSize > 5) {
-                maxSize = 5;
+                HorizontalLayout layout = new HorizontalLayout(text, closeButton);
+                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                notification.add(layout);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.MIDDLE);
+                notification.open();
+            } else if (!pendingItems.getUpcomingVaccinationSchedules().isEmpty()) {
+                int maxSize = pendingItems.getUpcomingVaccinationSchedules().size();
+                if (maxSize > 5) {
+                    maxSize = 5;
+                }
+                List<VaccinationSchedule> vaccinationScheduleList = pendingItems.getUpcomingVaccinationSchedules().stream().sorted(Comparator.comparing(VaccinationSchedule::getScheduledDate)).collect(Collectors.toList()).subList(0, maxSize - 1);
+                Notification.show("Your next vaccinations due are: " +
+                        String.join(", ", vaccinationScheduleList.stream().map(vaccinationSchedule ->
+                                        vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")")
+                                .collect(Collectors.toSet())), 3000, Notification.Position.MIDDLE);
             }
-            List<VaccinationSchedule> vaccinationScheduleList = pendingItems.getUpcomingVaccinationSchedules().stream().sorted(Comparator.comparing(VaccinationSchedule::getScheduledDate)).collect(Collectors.toList()).subList(0, maxSize - 1);
-            Notification.show("Your next vaccinations due are: " +
-                    String.join(", ", vaccinationScheduleList.stream().map(vaccinationSchedule ->
-                                    vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")")
-                            .collect(Collectors.toSet())), 3000, Notification.Position.MIDDLE);
         }
     }
 
