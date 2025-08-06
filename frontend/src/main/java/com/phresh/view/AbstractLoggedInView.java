@@ -64,10 +64,12 @@ public abstract class AbstractLoggedInView<P extends AbstractLoggedinPresenter<?
                 .getParameters()
                 .containsKey(LoginView.LOGGED_IN_MESSAGE)) {
             Notification.show("Logged in Successfully");
+            presenter.getUserFromAuthenticationContext().setSeenFirstNotification(false);
         }
 
         AbstractLoggedinPresenter.PendingItems pendingItems = presenter.getPendingVaccinationSchedules();
-        if (!pendingItems.getOutOfDateVaccinationSchedules().isEmpty()) {
+        if (!presenter.getUserFromAuthenticationContext().isSeenFirstNotification() && !pendingItems.getOutOfDateVaccinationSchedules().isEmpty()) {
+            presenter.getUserFromAuthenticationContext().setSeenFirstNotification(true);
             String outOfDateItems = String.join(", ", pendingItems.getOutOfDateVaccinationSchedules().stream().map(vaccinationSchedule ->
                     vaccinationSchedule.getVaccinationType() + " (" + vaccinationSchedule.getScheduledDate() + ")").collect(Collectors.toSet()));
             Notification notification = new Notification();

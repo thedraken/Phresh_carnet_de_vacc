@@ -34,6 +34,8 @@ public class User implements UserDetails, Authentication {
     private LocalDate dateOfBirth;
     @OneToMany(fetch = FetchType.EAGER)
     private Set<VaccinationSchedule> vaccinationSchedules;
+    @Transient
+    private boolean seenFirstNotification = false;
 
     public User() {
     }
@@ -129,6 +131,14 @@ public class User implements UserDetails, Authentication {
 
     public void setVaccinationSchedules(Set<VaccinationSchedule> vaccinationSchedules) {
         this.vaccinationSchedules = vaccinationSchedules;
+    }
+
+    public boolean isSeenFirstNotification() {
+        return seenFirstNotification;
+    }
+
+    public void setSeenFirstNotification(boolean seenFirstNotification) {
+        this.seenFirstNotification = seenFirstNotification;
     }
 
     @Override
